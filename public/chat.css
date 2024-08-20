@@ -1,0 +1,135 @@
+/* Reset some default styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body, html {
+    height: 100%;
+    width: 100%;
+    background-color: #f2f2f2;
+}
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+.chat-header {
+    background-color: #007bff;
+    padding: 10px;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu-icon {
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.report-button {
+    cursor: pointer;
+    background-color: #ff4d4d;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.chat-box {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    background-color: #e9ecef;
+}
+
+.chat-footer {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #ddd;
+}
+
+.end-button {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.next-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.chat-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.send-button {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.message {
+    padding: 8px 12px;
+    margin: 5px 0;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+    max-width: 80%;
+    align-self: flex-start; /* For aligning user messages to the left */
+}
+
+/* Specific styles for different types of messages */
+.message.you {
+    background-color: #007bff; /* Blue for user messages */
+    align-self: flex-end; /* Align to the right for user messages */
+}
+
+.message.stranger {
+    background-color: #e9ecef; /* Light gray for stranger messages */
+    color: #000; /* Black text for better readability */
+    align-self: flex-start; /* Align to the left for stranger messages */
+}
+
+@media (max-width: 600px) {
+    .chat-header, .chat-footer {
+        padding: 5px;
+    }
+
+    .end-button, .send-button, .next-button {
+        padding: 8px 10px;
+    }
+
+    .chat-input {
+        margin-right: 5px;
+    }
+    
+    .message {
+        padding: 8px 12px;
+        margin: 5px 0;
+        max-width: 80%;
+    }
+}

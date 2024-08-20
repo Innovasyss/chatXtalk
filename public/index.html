@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to chatXtalk</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="main-container">
+        <!-- More Options Menu -->
+        <div class="more-options">
+            <div class="menu-icon" onclick="toggleMenu()">
+                &#9776; <!-- Three-line (hamburger) icon -->
+            </div>
+            <div id="menu" class="dropdown-menu">
+                <a href="register.html">Register</a>
+                <a href="login.html">Login</a>
+                <a href="https://innovasyss.github.io/CompareCart/">More from developer</a>
+            </div>
+        </div>
+
+        <header>
+            <h1>Welcome to chatXtalk</h1>
+            <p>Your place to connect with strangers safely and anonymously. ChatX offers a unique and engaging platform for meeting new people and making connections, all while ensuring your privacy and security.</p>
+        </header>
+
+        <div class="content">
+            <h2>What Would You Like to Do?</h2>
+            <div class="buttons">
+                <button onclick="location.href='content.html'">Watch Content</button>
+                <button onclick="openModal('video')">Start a Video Chat</button>
+                <button onclick="openModal('text')">Start a Text Chat</button>
+            </div>
+
+            <section class="info">
+                <h2>What Our Website Can Do</h2>
+                <p>At ChatX, we provide you with the ability to connect with people from around the world in a safe and secure manner. Our platform supports both text and video chatting, allowing you to choose your preferred mode of communication. Whether you’re looking to make new friends, network with professionals, or simply have a casual conversation, ChatX has you covered. Our interface is designed to be intuitive and easy to use, ensuring that you can start a conversation with just a few clicks. We continuously update our technology to enhance user experience and provide new features that keep our platform fresh and engaging.</p>
+                <p>Our website is built with a focus on user comfort and accessibility. You can easily navigate through different sections and use our chat features without any hassle. Additionally, we offer various customization options to tailor your chat experience according to your preferences. Join our community today and experience the ease and joy of connecting with others through ChatX.</p>
+            </section>
+
+            <section class="info">
+                <h2>Security and Banning</h2>
+                <p>Your safety is our top priority at ChatX. We employ state-of-the-art security measures to protect our users from any potential threats and ensure a safe environment for all. Our platform includes robust algorithms and automated systems to detect and prevent any form of abusive behavior. We actively monitor user interactions and enforce our community guidelines strictly. Users who violate our terms of service are subject to immediate action, including temporary or permanent bans.</p>
+                <p>We encourage our users to report any suspicious or inappropriate behavior they encounter. Our dedicated support team reviews each report thoroughly and takes necessary actions to maintain a respectful and secure environment. We are committed to providing a platform where everyone can engage in meaningful and enjoyable conversations without fear of harassment or abuse.</p>
+            </section>
+
+            <section class="info">
+                <h2>Your Privacy Matters</h2>
+                <p>At ChatX, your privacy is of utmost importance to us. We have implemented comprehensive privacy measures to ensure that your personal information remains confidential and protected. We do not store any conversation data, and all communications on our platform are encrypted using the latest encryption technologies. Our privacy policy is designed to comply with global data protection regulations, and we continually review our practices to align with the highest standards of data security.</p>
+                <p>We believe in providing a secure and anonymous environment for all our users. Our system allows you to chat without revealing your personal details, giving you the freedom to express yourself while maintaining your privacy. Should you have any concerns about your privacy or data security, please feel free to reach out to our support team. We are always here to assist and ensure that your experience on ChatX is both enjoyable and secure.</p>
+            </section>
+        </div>
+
+        <!-- Terms & Conditions and Privacy Policy Links -->
+        <div class="legal-links">
+            <a href="termsandconditions.html">Terms & Conditions</a>
+            <span>&bull;</span>
+            <a href="privacypolicy.html">Privacy Policy</a>
+        </div>
+        
+        <footer>
+            <p>&copy; 2024 chatXtalk. All rights reserved.</p>
+        </footer>
+
+        <!-- Modal -->
+        <div id="consentModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>Terms & Conditions and Privacy Policy</h2>
+                <div class="modal-body">
+                    <label>
+                        <input type="checkbox" id="termsCheckbox"> I have read and agree to the <a href="termsandconditions.html">Terms & Conditions</a>
+                    </label>
+                    <label>
+                        <input type="checkbox" id="privacyCheckbox"> I have read and agree to the <a href="privacypolicy.html">Privacy Policy</a>
+                    </label>
+                </div>
+                <div class="modal-footer">
+                    <button onclick="confirmConsent()">Confirm</button>
+                    <button onclick="closeModal()">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function toggleMenu() {
+                const menu = document.getElementById("menu");
+                menu.classList.toggle("show");
+            }
+
+            // Close the dropdown if the user clicks outside of it
+            window.onclick = function(event) {
+                if (!event.target.matches('.menu-icon')) {
+                    const dropdowns = document.getElementsByClassName("dropdown-menu");
+                    for (let i = 0; i < dropdowns.length; i++) {
+                        const openDropdown = dropdowns[i];
+                        if (openDropdown.classList.contains('show')) {
+                            openDropdown.classList.remove('show');
+                        }
+                    }
+                }
+            }
+
+            function openModal(chatType) {
+                document.getElementById("consentModal").style.display = "flex";
+                document.getElementById("consentModal").setAttribute("data-chat-type", chatType);
+            }
+
+            function closeModal() {
+                document.getElementById("consentModal").style.display = "none";
+            }
+
+            function confirmConsent() {
+                const termsChecked = document.getElementById("termsCheckbox").checked;
+                const privacyChecked = document.getElementById("privacyCheckbox").checked;
+                const chatType = document.getElementById("consentModal").getAttribute("data-chat-type");
+
+                if (termsChecked && privacyChecked) {
+                    closeModal();
+                    if (chatType === 'text') {
+                        window.location.href = "chat.html"; // Adjust the path as needed
+                    } else if (chatType === 'video') {
+                        window.location.href = "videochat.html"; // Adjust the path as needed
+                    }
+                } else {
+                    alert("You must agree to both the Terms & Conditions and Privacy Policy to proceed.");
+                }
+            }
+        </script>
+    </div>
+</body>
+</html>

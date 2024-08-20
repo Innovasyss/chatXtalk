@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Chat - ChatX</title>
+    <link rel="stylesheet" href="videochat.css">
+</head>
+<body>
+    <div class="main-container">
+        <div id="videoContainer">
+            <div id="remoteContainer">
+                <video id="remoteVideo" autoplay></video>
+            </div>
+            <div id="localContainer">
+                <video id="localVideo" autoplay muted></video>
+                <div id="videoControls">
+                    <button id="toggleVideo">Turn Video Off</button>
+                    <button id="toggleMic">Turn Mic Off</button>
+                </div>
+            </div>
+        </div>
+        <div id="messageContainer">
+            <button id="nextChatButton">Next</button>
+            <button id="endChatButton">End Chat</button>
+            <input id="messageInput" type="text" placeholder="Type your message...">
+            <button id="sendButton">Send</button>
+        </div>
+    </div>
+    
+    <script>
+        const remoteVideo = document.getElementById('remoteVideo');
+        const localVideo = document.getElementById('localVideo');
+        const toggleVideoButton = document.getElementById('toggleVideo');
+        const toggleMicButton = document.getElementById('toggleMic');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const endChatButton = document.getElementById('endChatButton');
+        const nextChatButton = document.getElementById('nextChatButton');
+        const peerConnection = new RTCPeerConnection();
+        const ws = new WebSocket('ws://localhost:8080');
+
+        let localStream;
+        let videoEnabled = true;
+        let audioEnabled = true;
+
+        // Access local camera and microphone
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+            .then(stream => {
+                localVideo.srcObject = stream;
+                localStream = stream;
+                stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+            });
+
+        ws.onmessage = async (event) => {
+            const message = JSON.parse(event.data);
+            if (message.offer) {
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(message.offer));
+                const answer = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(answer);
+                ws.send(JSON.stringify({ answer: answer }));
+            } else if (message.answer) {
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(message.answer));
+            } else if (message.iceCandidate) {
+                await peerConnection.addIceCandidate(new RTCIceCandidate(message.iceCandidate));
+            }
+        };
+
+        peerConnection.ontrack = (event) => {
+            remoteVideo.srcObject = event.streams[0];
+        };
+
+        peerConnection.onicecandidate = (event) => {
+            if (event.candidate) {
+                ws.send(JSON.stringify({ iceCandidate: event.candidate }));
+            }
+        };
+
+        // Toggle video and mic
+        toggleVideoButton.onclick = () => {
+            videoEnabled = !videoEnabled;
+            localStream.getVideoTracks().forEach(track => track.enabled = videoEnabled);
+            toggleVideoButton.textContent = videoEnabled ? 'Turn Video Off' : 'Turn Video On';
+        };
+
+        toggleMicButton.onclick = () => {
+            audioEnabled = !audioEnabled;
+            localStream.getAudioTracks().forEach(track => track.enabled = audioEnabled);
+            toggleMicButton.textContent = audioEnabled ? 'Turn Mic Off' : 'Turn Mic On';
+        };
+
+        // End chat and redirect
+        endChatButton.onclick = () => {
+            // Close connection and redirect or perform any necessary cleanup
+            peerConnection.close();
+            window.location.href = 'index.html'; // Redirect to home page or any other page
+        };
+
+        // Find new chat partner
+        nextChatButton.onclick = () => {
+            // Close connection and redirect to find a new chat partner
+            peerConnection.close();
+            window.location.href = 'index.html'; // Redirect to home page or any other page
+        };
+
+        // Send chat messages
+        sendButton.onclick = () => {
+            const message = messageInput.value;
+            ws.send(message);
+            messageInput.value = '';
+        };
+    </script>
+</body>
+</html>

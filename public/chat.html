@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatX Talk</title>
+    <link rel="stylesheet" href="chat.css">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="menu-icon">&#9776;</div>
+            <div class="report-button" id="report-button">Report</div>
+        </div>
+        <div id="status">Finding a partner...</div> <!-- Status message -->
+        <div class="chat-box" id="chat-box">
+            <!-- Messages will appear here -->
+        </div>
+        <div class="chat-footer">
+            <button class="end-button" id="end-button">End</button>
+            <button class="next-button" id="next-button">Next</button> <!-- New button for finding next partner -->
+            <input type="text" class="chat-input" id="chat-input" placeholder="Type your message..." disabled>
+            <button class="send-button" id="send-button" disabled>Send</button>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io.connect('http://localhost:3000');
+        const chatBox = document.getElementById('chat-box');
+        const chatInput = document.getElementById('chat-input');
+        const sendButton = document.getElementById('send-button');
+        const endButton = document.getElementById('end-button');
+        const nextButton = document.getElementById('next-button');
+        const status = document.getElementById('status');
+        const reportButton = document.getElementById('report-button');
+
+        let room = null;
+
+        socket.on('waiting', () => {
+            status.textContent = 'Finding a partner...';
+        });
+
+        socket.on('chat-start', (data) => {
+            room = data.room;
+            status.textContent = 'Found a partner! Start chatting!';
+            chatInput.disabled = false;
+            sendButton.disabled = false;
+            endButton.style.display = 'block'; // Ensure End button is visible
+            nextButton.style.display = 'none'; // Hide Next button
+        });
+
+        socket.on('message', (data) => {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+            if (data.sender === 'you') {
+                messageElement.classList.add('you');
+                messageElement.textContent = `You: ${data.message}`;
+            } else {
+                messageElement.classList.add('stranger');
+                messageElement.textContent = `Stranger: ${data.message}`;
+            }
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
+        });
+
+        socket.on('partner-disconnected', () => {
+            status.textContent = 'The user has ended the chat. Want to find a new partner?';
+            chatInput.disabled = true;
+            sendButton.disabled = true;
+            endButton.style.display = 'none'; // Hide End button
+            nextButton.style.display = 'block'; // Show the Next button
+        });
+
+        sendButton.addEventListener('click', () => {
+            const message = chatInput.value.trim();
+            if (message) {
+                socket.emit('message', { room, message, sender: 'you' });
+                chatInput.value = '';
+                chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
+            }
+        });
+
+        chatInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                sendButton.click();
+            }
+        });
+
+        endButton.addEventListener('click', () => {
+            socket.emit('end-chat');
+            status.textContent = 'Ending chat...';
+            chatBox.innerHTML = '';
+            chatInput.value = '';
+        });
+
+        nextButton.addEventListener('click', () => {
+            socket.emit('find-next-partner');
+            status.textContent = 'Finding a new partner...';
+            chatBox.innerHTML = '';
+            chatInput.value = '';
+            endButton.style.display = 'block'; // Show the End button again
+            nextButton.style.display = 'none'; // Hide the Next button
+        });
+
+        reportButton.addEventListener('click', () => {
+            alert("User has been reported.");
+        });
+    </script>
+</body>
+</html>
